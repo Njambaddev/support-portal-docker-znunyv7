@@ -1,0 +1,55 @@
+# Use Debian 12 as base image
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install required packages
+RUN apt-get update -y && \
+	apt-get install -y apache2 mariadb-client mariadb-server tar bash-completion wget \
+	libapache2-mod-perl2 libdbd-mysql-perl libtimedate-perl libnet-dns-perl libnet-ldap-perl \
+	libio-socket-ssl-perl libpdf-api2-perl libsoap-lite-perl libtext-csv-xs-perl libjson-xs-perl \
+	libapache-dbi-perl libxml-libxml-perl libxml-libxslt-perl libyaml-perl libarchive-zip-perl \
+	libcrypt-eksblowfish-perl libencode-hanextra-perl libmail-imapclient-perl libtemplate-perl \
+	libdatetime-perl libmoo-perl bash-completion libyaml-libyaml-perl libjavascript-minifier-xs-perl \
+	libcss-minifier-xs-perl libauthen-sasl-perl libauthen-ntlm-perl libhash-merge-perl \
+	libical-parser-perl libspreadsheet-xlsx-perl && \
+	apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+# Download and install Znuny 7.2.1 from source, rename to app
+WORKDIR /opt
+RUN wget https://download.znuny.org/releases/znuny-latest-7.2.tar.gz && \
+	tar xzf znuny-latest-7.2.tar.gz && \
+	mv znuny-7.2.3 app && \
+	rm znuny-latest-7.2.tar.gz && \
+	ln -s /opt/app /opt/znuny
+
+# MariaDB configuration for Znuny
+COPY 50-znuny_config.cnf /etc/mysql/mariadb.conf.d/50-znuny_config.cnf
+
+# Create Config.pm from dist template and set up otrs user
+# Configure database connection in Config.pm
+RUN cp /opt/app/Kernel/Config.pm.dist /opt/app/Kernel/Config.pm && \
+	sed -i "s|127.0.0.1|db|" /opt/app/Kernel/Config.pm && \
+	sed -i "s|'some-pass'|'znuny_pass'|" /opt/app/Kernel/Config.pm && \
+	useradd -r -d /opt/app -s /bin/bash otrs && \
+	usermod -aG www-data otrs && \
+	usermod -aG otrs www-data && \
+	chown -R otrs:www-data /opt/app && \
+	/opt/app/bin/otrs.SetPermissions.pl --znuny-user=otrs --web-group=www-data
+
+# Backup var directory so it can be restored when volume is mounted
+RUN cp -a /opt/app/var /opt/app/var.dist
+
+RUN sed -i 's|/opt/znuny/|/opt/app/|g' /opt/app/scripts/apache2-perl-startup.pl
+RUN sed 's|/opt/znuny/|/opt/app/|g' /opt/app/scripts/apache2-httpd.include.conf > /etc/apache2/conf-available/znuny.conf
+RUN a2dismod mpm_event && a2enmod mpm_prefork headers filter perl && a2enconf znuny
+
+# Expose web and DB ports
+EXPOSE 80 3306
+
+# Start services and Znuny installer
+CMD cp -an /opt/app/var.dist/* /opt/app/var/ && \
+	chown -R otrs:www-data /opt/app && chmod -R g+rX /opt/app && chmod -R g+rwX /opt/app/var && \
+	service mariadb start && service apache2 start && tail -f /dev/null

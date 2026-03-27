@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: DockerFile
+    container_name: Support_v7-App
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    restart: unless-stopped
+    volumes:
+      - ./app-data:/opt/app/var
+  db:
+    image: mariadb:10.11
+    container_name: Support_V7-DB
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./50-znuny_config.cnf:/etc/mysql/mariadb.conf.d/50-znuny_config.cnf
+    restart: unless-stopped
+    ports:
+      - "3310:3306"

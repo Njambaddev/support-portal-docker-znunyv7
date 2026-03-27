@@ -1,0 +1,18 @@
+# Environment variables — never commit real credentials
+.env
+
+# Runtime data volumes
+app-data/
+db-data/
+
+# Large binary/archive files
+*.rpm
+*.tar.gz
+*.tar
+*.zip
+
+# Unrelated documents
+*.pdf
+*.docx
+*.ods
+*.xlsx
