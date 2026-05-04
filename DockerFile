@@ -17,12 +17,12 @@ RUN apt-get update -y && \
 	apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
-# Download and install Znuny 7.2.1 from source, rename to app
+# Install Znuny 7.3.2 from local archive, rename to app
 WORKDIR /opt
-RUN wget https://download.znuny.org/releases/znuny-latest-7.2.tar.gz && \
-	tar xzf znuny-latest-7.2.tar.gz && \
-	mv znuny-7.2.3 app && \
-	rm znuny-latest-7.2.tar.gz && \
+COPY znuny-7.3.2.tar.gz /tmp/znuny.tar.gz
+RUN tar xzf /tmp/znuny.tar.gz && \
+	mv znuny-7.3.2 app && \
+	rm /tmp/znuny.tar.gz && \
 	ln -s /opt/app /opt/znuny
 
 # MariaDB configuration for Znuny
