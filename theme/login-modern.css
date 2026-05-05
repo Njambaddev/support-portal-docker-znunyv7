@@ -154,9 +154,14 @@ body.LoginScreen {
     50% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.05); }
 }
 
-/* --- Middle: eyebrow, title, lede, features --- */
+/* --- Middle: eyebrow, title, lede, features ---
+   Centered horizontally inside the hero panel so content doesn't drift
+   to the left edge on wide viewports. */
 .LoginHero-mid {
-    max-width: 540px;
+    max-width: 580px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .LoginHero-eyebrow {
@@ -320,9 +325,10 @@ body.LoginScreen {
 
 .LoginScreen #LoginPanel .MainBox > div {
     width: 100%;
-    max-width: 460px;
-    padding: 0 48px;
+    max-width: 520px;
+    padding: 0 56px;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .LoginScreen #LoginLogo { display: none !important; }
@@ -361,27 +367,32 @@ body.LoginScreen {
     font-weight: 500;
 }
 
-/* Welcome heading + subtitle (\00a0 preserves spaces through the minifier) */
+/* Welcome heading + subtitle.
+   Use the full 6-digit hex escape \0000a0 (U+00A0 non-breaking space)
+   to preserve the space after a comma through Znuny's CSS minifier
+   without ambiguity — the 4-digit form \00a0 followed by a hex letter
+   (a-f) gets parsed as a single 5-digit escape and mangles the text. */
 .LoginScreen #LoginBox form::before {
-    content: "Welcome back,\00a0agent.";
+    content: "Welcome back,\0000a0agent.";
     display: block;
     font-family: var(--m-serif);
-    font-size: 44px;
+    font-size: 42px;
     line-height: 1.1;
     font-weight: 500;
     color: var(--m-ink);
     margin: 0 0 14px;
     letter-spacing: -0.015em;
+    white-space: nowrap;
 }
 
 .LoginScreen #LoginBox form fieldset::before {
-    content: "Sign in to access your queues,\00a0dashboards,\00a0and the work that's waiting on you.";
+    content: "Sign in to access your queues,\0000a0dashboards,\0000a0and the work that's waiting on you.";
     display: block;
     font-size: 14px;
     line-height: 1.55;
     color: var(--m-muted);
     margin-bottom: 36px;
-    max-width: 38ch;
+    max-width: 42ch;
 }
 
 /* ---------- Form fields ---------- */
