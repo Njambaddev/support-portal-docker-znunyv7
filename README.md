@@ -1,6 +1,8 @@
-# Jambo Support Portal — Znuny 7.3.2 (Docker)
+# SupportDeck — Znuny 7.3.2 (Docker)
 
-Dockerised Znuny 7.3.2 helpdesk on Ubuntu 22.04 + Apache (mod_perl) with a MariaDB 10.11 backend. Both services are defined in [docker-compose.yml](docker-compose.yml) and can run alongside other Znuny instances on the same host.
+**SupportDeck** is the Jambo helpdesk instance, built on Znuny 7.3.2 with a custom modern login skin. It runs on Ubuntu 22.04 + Apache (mod_perl) with a MariaDB 10.11 backend. Both services are defined in [docker-compose.yml](docker-compose.yml) and can run alongside other Znuny instances on the same host.
+
+> The user-facing brand name (`ProductName`) is set to **SupportDeck** in Znuny's SysConfig. To change it later: `docker exec Support_V7-App-portal su -s /bin/bash otrs -c '/opt/app/bin/znuny.Console.pl Admin::Config::Update --setting-name ProductName --value YourName'`.
 
 ## Stack
 

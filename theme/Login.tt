@@ -73,7 +73,7 @@ X-OTRS-Login: [% Env("Baselink") %]
     <link rel="apple-touch-icon" href="[% Config("Frontend::WebPath") %][% Data.AgentAppleTouchIcon %]" />
 [% RenderBlockEnd("ShortcutIcon") %]
 
-    <title>[% Translate(Data.Title) | html %] - [% Config("ProductName") %]</title>
+    <title>[% Translate(Data.Title) | html %] - SupportDeck</title>
 
 [% InsertTemplate("HTMLHeadBlockEvents.tt") %]
 
@@ -88,8 +88,8 @@ X-OTRS-Login: [% Env("Baselink") %]
     <aside id="LoginHero" aria-hidden="true">
         <div class="LoginHero-top">
             <div class="LoginHero-brand">
-                <span class="LoginHero-mark">Z</span>
-                <span class="LoginHero-wordmark">znuny.</span>
+                <span class="LoginHero-mark">S</span>
+                <span class="LoginHero-wordmark">supportdeck.</span>
             </div>
             <div class="LoginHero-status">
                 <span class="LoginHero-statusDot"></span>
@@ -145,8 +145,8 @@ X-OTRS-Login: [% Env("Baselink") %]
         </div>
 
         <div class="LoginHero-bottom">
-            <span>&copy; ZNUNY GMBH &middot; BERLIN</span>
-            <a href="https://github.com/znuny" target="_blank" rel="noopener noreferrer">GITHUB.COM/ZNUNY &#8599;</a>
+            <span>&copy; SUPPORTDECK &middot; 2026</span>
+            <a href="mailto:support@supportdeck.local">SUPPORT@SUPPORTDECK.LOCAL &#8599;</a>
         </div>
     </aside>
 
@@ -262,7 +262,7 @@ X-OTRS-Login: [% Env("Baselink") %]
                                 </div>
 
                                 <div class="Field">
-                                    <button type="submit" id="LoginButton" class="btn-main btn-primary" value="[% Translate("Login") | html %]" disabled="disabled"><span>Sign in to Znuny</span></button>
+                                    <button type="submit" id="LoginButton" class="btn-main btn-primary" value="[% Translate("Login") | html %]" disabled="disabled"><span>Sign in to SupportDeck</span></button>
                                 </div>
 
 [% RenderBlockStart("SAMLLoginLink") %]
