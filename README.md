@@ -29,6 +29,7 @@ After completing the installer, the running instance is reachable at:
 |---|---|
 | User | `root@localhost` |
 | Password | `KWQF5UxkPoc9bRo0` |
+|Admin User| `Njuguna` | Password: `Njuguna` |
 
 > Change this password on first login (Personal Preferences → Change Password). Treat the value above as a bootstrap secret — do not reuse it in production.
 
