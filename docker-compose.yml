@@ -17,6 +17,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./app-data:/opt/app/var
+      - ./theme/Login.tt:/opt/app/Kernel/Output/HTML/Templates/Standard/Login.tt
   db:
     image: mariadb:10.11
     container_name: Support_V7-DB-portal

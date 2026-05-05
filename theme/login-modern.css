@@ -1,0 +1,815 @@
+/* >>> JAMBO MODERN LOGIN — START >>>
+   Split-screen modern login: dark hero on the left, cream form on the right.
+   Source of truth: theme/login-modern.css (project root).
+   Applied by appending to:
+     app-data/httpd/htdocs/skins/Agent/default/css/Core.Login.css
+   Companion template: theme/Login.tt (bind-mounted into the container).
+   Re-apply with: bash theme/apply.sh
+   Pure CSS — no functional changes to the form. The new DOM (#LoginHero,
+   eye toggle, SSO/LDAP placeholder buttons) lives in Login.tt and is
+   purely additive — original field IDs, names, and submit handlers are
+   unchanged.
+   Note on CSS string literals: Znuny's loader minifier strips spaces
+   after commas inside content:"..."; use \00a0 (non-breaking space) to
+   preserve them.
+*/
+
+:root {
+    --m-bg: #F5F1EA;
+    --m-bg-2: #ECE6DA;
+    --m-ink: #1A1A1A;
+    --m-ink-2: #2A2A2A;
+    --m-muted: #6B6B6B;
+    --m-rule: #D4CCBE;
+    --m-placeholder: #B8AFA0;
+    --m-accent: #D4694F;
+    --m-accent-soft: #E8A085;
+    --m-card: #FFFFFF;
+
+    --m-hero-bg: #0E1B2C;
+    --m-hero-bg-2: #16263A;
+    --m-hero-ink: #E6E2D8;
+    --m-hero-muted: #8A93A1;
+    --m-hero-rule: rgba(255, 255, 255, 0.08);
+    --m-hero-grid: rgba(255, 255, 255, 0.035);
+
+    --m-serif: ui-serif, "Iowan Old Style", "Apple Garamond", Georgia, "Times New Roman", serif;
+    --m-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    --m-mono: ui-monospace, "SF Mono", Menlo, "JetBrains Mono", Consolas, monospace;
+}
+
+/* ---------- Page shell ---------- */
+body.LoginScreen {
+    background: var(--m-bg) !important;
+    color: var(--m-ink);
+    font-family: var(--m-sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.LoginScreen #AppWrapper {
+    height: auto !important;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+}
+
+/* Old #Header is rendered inside #LoginPanel now; hide the legacy injected one if present */
+.LoginScreen #LoginPanel #Header {
+    display: none !important;
+}
+
+/* =====================================================================
+   LEFT HERO PANEL
+   ===================================================================== */
+#LoginHero {
+    background: linear-gradient(160deg, var(--m-hero-bg) 0%, var(--m-hero-bg-2) 100%);
+    background-image:
+        linear-gradient(var(--m-hero-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--m-hero-grid) 1px, transparent 1px),
+        linear-gradient(160deg, var(--m-hero-bg) 0%, var(--m-hero-bg-2) 100%);
+    background-size: 40px 40px, 40px 40px, 100% 100%;
+    background-position: 0 0, 0 0, 0 0;
+    color: var(--m-hero-ink);
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+#LoginHero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 40%, rgba(212, 105, 79, 0.08), transparent 60%);
+    pointer-events: none;
+}
+
+#LoginHero > * { position: relative; z-index: 1; }
+
+/* --- Top row: brand + status pill --- */
+.LoginHero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.LoginHero-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.LoginHero-mark {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--m-accent);
+    color: var(--m-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--m-serif);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 18px;
+    border-radius: 4px;
+    background: rgba(212, 105, 79, 0.06);
+}
+
+.LoginHero-wordmark {
+    font-family: var(--m-sans);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--m-hero-ink);
+    letter-spacing: -0.01em;
+}
+
+.LoginHero-status {
+    font-family: var(--m-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--m-hero-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.LoginHero-statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ADE80;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18);
+    animation: jambo-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes jambo-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18); }
+    50% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.05); }
+}
+
+/* --- Middle: eyebrow, title, lede, features --- */
+.LoginHero-mid {
+    max-width: 540px;
+}
+
+.LoginHero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--m-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--m-accent);
+    margin-bottom: 36px;
+}
+.LoginHero-eyebrowLine {
+    display: inline-block;
+    width: 28px;
+    height: 1.5px;
+    background: var(--m-accent);
+}
+
+.LoginHero-title {
+    font-family: var(--m-serif);
+    font-size: 76px;
+    line-height: 0.98;
+    font-weight: 500;
+    color: var(--m-hero-ink);
+    margin: 0 0 24px;
+    letter-spacing: -0.02em;
+}
+.LoginHero-title em {
+    font-style: italic;
+    color: var(--m-accent);
+    font-weight: 500;
+}
+
+.LoginHero-lede {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--m-hero-muted);
+    margin: 0 0 40px;
+    max-width: 44ch;
+}
+
+.LoginHero-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 22px;
+    max-width: 560px;
+}
+
+.LoginHero-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px 14px 14px;
+    border: 1px solid var(--m-hero-rule);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.015);
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+.LoginHero-feature:hover {
+    border-color: rgba(212, 105, 79, 0.4);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.LoginHero-feature .fa {
+    flex: 0 0 auto;
+    color: var(--m-accent);
+    font-size: 18px;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.LoginHero-feature strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--m-hero-ink);
+    margin-bottom: 3px;
+    letter-spacing: -0.005em;
+}
+
+.LoginHero-feature span {
+    display: block;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--m-hero-muted);
+}
+
+/* --- Bottom row: copyright + github link --- */
+.LoginHero-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--m-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--m-hero-muted);
+}
+
+.LoginHero-bottom a {
+    color: var(--m-hero-muted);
+    text-decoration: none;
+    transition: color 0.18s ease;
+}
+.LoginHero-bottom a:hover {
+    color: var(--m-accent);
+}
+
+/* =====================================================================
+   RIGHT FORM PANEL
+   ===================================================================== */
+#LoginPanel {
+    background: var(--m-bg);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Top strip with "SECURE AGENT PORTAL" + dashes — replaces the legacy #Header */
+#LoginPanel::before {
+    content: "SECURE AGENT PORTAL";
+    position: absolute;
+    top: 40px;
+    left: 48px;
+    font-family: var(--m-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--m-ink);
+    font-weight: 500;
+}
+
+#LoginPanel::after {
+    content: "";
+    position: absolute;
+    top: 44px;
+    right: 48px;
+    width: 64px;
+    height: 3px;
+    background-image:
+        linear-gradient(to right,
+            var(--m-accent) 0 16px,
+            transparent 16px 24px,
+            var(--m-accent) 24px 40px,
+            transparent 40px 48px,
+            var(--m-rule) 48px 64px);
+}
+
+.LoginScreen #LoginPanel .MainBox {
+    padding: 0 !important;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.LoginScreen #LoginPanel .MainBox > div {
+    width: 100%;
+    max-width: 460px;
+    padding: 0 48px;
+    margin: 0 auto;
+}
+
+.LoginScreen #LoginLogo { display: none !important; }
+
+.LoginScreen #LoginPanel .LoginBox,
+.LoginScreen #LoginPanel #PasswordBox {
+    max-width: none !important;
+    margin: 0 !important;
+    background: transparent;
+}
+
+.LoginScreen #LoginPanel .LoginBox > .WidgetSimple,
+.LoginScreen #LoginPanel #PasswordBox > .WidgetSimple {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0;
+}
+
+.LoginScreen #LoginPanel .LoginBox > .WidgetSimple .Content,
+.LoginScreen #LoginPanel #PasswordBox > .WidgetSimple .Content {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+/* "01 — AUTHENTICATION" eyebrow */
+.LoginScreen #LoginBox .WidgetSimple .Content::before {
+    content: "01 — AUTHENTICATION";
+    display: block;
+    font-family: var(--m-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--m-accent);
+    margin-bottom: 18px;
+    font-weight: 500;
+}
+
+/* Welcome heading + subtitle (\00a0 preserves spaces through the minifier) */
+.LoginScreen #LoginBox form::before {
+    content: "Welcome back,\00a0agent.";
+    display: block;
+    font-family: var(--m-serif);
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 500;
+    color: var(--m-ink);
+    margin: 0 0 14px;
+    letter-spacing: -0.015em;
+}
+
+.LoginScreen #LoginBox form fieldset::before {
+    content: "Sign in to access your queues,\00a0dashboards,\00a0and the work that's waiting on you.";
+    display: block;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--m-muted);
+    margin-bottom: 36px;
+    max-width: 38ch;
+}
+
+/* ---------- Form fields ---------- */
+.LoginScreen #LoginBox form fieldset > div,
+.LoginScreen #PasswordBox form fieldset > div {
+    margin-bottom: 22px;
+    position: relative;
+}
+
+.LoginScreen #LoginBox label,
+.LoginScreen #PasswordBox label {
+    display: block;
+    font-family: var(--m-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--m-ink);
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.LoginScreen #LoginBox label .Marker,
+.LoginScreen #PasswordBox label .Marker {
+    display: none;
+}
+
+.LoginScreen #LoginBox label[for="User"]::after { content: "required"; }
+.LoginScreen #LoginBox label[for="Password"]::after { content: "8+ characters"; }
+.LoginScreen #LoginBox label[for="TwoFactorToken"]::after { content: "from your auth app"; }
+.LoginScreen #LoginBox label::after,
+.LoginScreen #PasswordBox label::after {
+    float: right;
+    color: var(--m-muted);
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+}
+
+/* Inputs — bottom-border only */
+.LoginScreen #LoginBox input[type="text"],
+.LoginScreen #LoginBox input[type="password"],
+.LoginScreen #PasswordBox input[type="text"] {
+    width: 100% !important;
+    box-sizing: border-box;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid var(--m-rule) !important;
+    border-radius: 0 !important;
+    padding: 10px 0 !important;
+    font-size: 16px;
+    color: var(--m-ink);
+    font-family: var(--m-sans);
+    box-shadow: none !important;
+    outline: none !important;
+    transition: border-color 0.18s ease;
+}
+
+.LoginScreen #LoginBox input[type="text"]:focus,
+.LoginScreen #LoginBox input[type="password"]:focus,
+.LoginScreen #PasswordBox input[type="text"]:focus {
+    border-bottom-color: var(--m-accent) !important;
+}
+
+.LoginScreen #LoginBox input::placeholder,
+.LoginScreen #PasswordBox input::placeholder {
+    color: var(--m-placeholder);
+    opacity: 1;
+}
+
+/* Password wrapper + eye toggle */
+.LoginPanel-pwrap {
+    position: relative;
+}
+.LoginPanel-pwrap input {
+    padding-right: 36px !important;
+}
+.LoginPanel-eye {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 0;
+    color: var(--m-muted);
+    cursor: pointer;
+    padding: 6px;
+    line-height: 1;
+    font-size: 16px;
+    transition: color 0.18s ease;
+}
+.LoginPanel-eye:hover {
+    color: var(--m-ink);
+}
+.LoginPanel-eye .fa::before {
+    content: "\f06e"; /* fa-eye */
+}
+.LoginPanel-eye.LoginPanel-eye--on .fa::before {
+    content: "\f070"; /* fa-eye-slash */
+}
+
+/* Tooltip error messages */
+.LoginScreen .TooltipErrorMessage {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 6px 0;
+    font-size: 12px;
+    color: #B91C1C;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+.LoginScreen .TooltipErrorMessage p { margin: 0; }
+
+/* Remember + forgot row */
+.LoginPanel-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    margin: 26px 0 24px !important;
+}
+.LoginPanel-remember {
+    font-family: var(--m-sans) !important;
+    font-size: 13px !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    color: var(--m-ink) !important;
+    font-weight: 400 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.LoginPanel-remember input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--m-rule);
+    border-radius: 3px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+.LoginPanel-remember input[type="checkbox"]:hover {
+    border-color: var(--m-ink);
+}
+.LoginPanel-remember input[type="checkbox"]:checked {
+    border-color: var(--m-ink);
+    background: var(--m-ink);
+}
+.LoginPanel-remember input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+}
+.LoginPanel-remember::after { content: none !important; }
+
+.LoginPanel-forgot {
+    font-size: 13px;
+    color: var(--m-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--m-rule);
+    transition: color 0.18s ease, text-decoration-color 0.18s ease;
+}
+.LoginPanel-forgot:hover {
+    color: var(--m-accent);
+    text-decoration-color: var(--m-accent);
+}
+
+/* ---------- Primary button ---------- */
+.LoginScreen #LoginBox .Field {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.LoginScreen #LoginButton,
+.LoginScreen #PasswordBox button[type="submit"] {
+    width: 100%;
+    background: var(--m-ink) !important;
+    color: #fff !important;
+    border: none !important;
+    border-top: 2px solid var(--m-accent) !important;
+    border-radius: 0 !important;
+    padding: 18px 24px !important;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    font-family: var(--m-sans);
+    transition: background 0.18s ease, opacity 0.18s ease;
+    box-shadow: none !important;
+    text-transform: none;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.LoginScreen #LoginButton:hover:not([disabled]),
+.LoginScreen #PasswordBox button[type="submit"]:hover:not([disabled]) {
+    background: var(--m-ink-2) !important;
+}
+
+.LoginScreen #LoginButton[disabled],
+.LoginScreen #PasswordBox button[type="submit"][disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.LoginScreen #LoginButton::after,
+.LoginScreen #PasswordBox button[type="submit"]::after {
+    content: "→";
+    font-size: 18px;
+    line-height: 1;
+    margin-left: 16px;
+    transition: transform 0.18s ease;
+}
+.LoginScreen #LoginButton:hover:not([disabled])::after {
+    transform: translateX(3px);
+}
+
+.LoginScreen #LoginButton span,
+.LoginScreen #PasswordBox button[type="submit"] span {
+    display: inline-block;
+}
+
+/* SAML link from Znuny core (when configured) */
+.LoginScreen .btn-cancel-ghost.btn-main {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent !important;
+    color: var(--m-ink) !important;
+    border: 1px solid var(--m-rule) !important;
+    border-radius: 0 !important;
+    padding: 16px 24px !important;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 14px;
+    transition: border-color 0.18s ease, color 0.18s ease;
+}
+.LoginScreen .btn-cancel-ghost.btn-main:hover {
+    border-color: var(--m-accent) !important;
+    color: var(--m-accent) !important;
+}
+
+/* ---------- "OR CONTINUE WITH" divider ---------- */
+.LoginPanel-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 28px 0 18px;
+    font-family: var(--m-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--m-muted);
+}
+.LoginPanel-divider::before,
+.LoginPanel-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--m-rule);
+}
+
+/* SSO/LDAP placeholder buttons */
+.LoginPanel-providers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.LoginPanel-provider {
+    background: transparent;
+    border: 1px solid var(--m-rule);
+    border-radius: 2px;
+    padding: 12px 16px;
+    font-family: var(--m-sans);
+    font-size: 13px;
+    color: var(--m-ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+.LoginPanel-provider:hover {
+    border-color: var(--m-ink);
+    background: rgba(26, 26, 26, 0.02);
+}
+.LoginPanel-provider .fa {
+    color: var(--m-muted);
+    font-size: 14px;
+}
+
+.LoginPanel-newhere {
+    text-align: center;
+    font-size: 13px;
+    color: var(--m-muted);
+    margin: 0;
+}
+.LoginPanel-newhere a {
+    color: var(--m-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--m-rule);
+}
+.LoginPanel-newhere a:hover {
+    color: var(--m-accent);
+    text-decoration-color: var(--m-accent);
+}
+
+/* Hide the legacy "Lost your password?" link — replaced by .LoginPanel-forgot */
+.LoginPanel-lostHidden {
+    position: absolute !important;
+    left: -10000px !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* ---------- Lost-password screen heading ---------- */
+.LoginScreen #PasswordBox h2 {
+    font-family: var(--m-serif);
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--m-ink);
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+}
+
+/* ---------- Status banners ---------- */
+.LoginScreen .LoginBox .ErrorBox,
+.LoginScreen .LoginBox .SuccessBox,
+.LoginScreen .LoginBox .MessageBox {
+    max-width: none !important;
+    border-radius: 2px !important;
+    text-align: left !important;
+    padding: 12px 16px !important;
+    margin: 0 0 24px !important;
+    font-size: 13px;
+    color: var(--m-ink) !important;
+    background: var(--m-card) !important;
+    border-left: 3px solid var(--m-accent) !important;
+    box-shadow: 0 1px 2px rgba(26, 26, 26, 0.04);
+}
+.LoginScreen .LoginBox .SuccessBox {
+    border-left-color: #16A34A !important;
+}
+.LoginScreen .LoginBox .ErrorBox {
+    border-left-color: #DC2626 !important;
+    color: #991B1B !important;
+}
+
+/* ---------- Right-panel footer ---------- */
+#LoginFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 48px;
+    font-family: var(--m-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--m-muted);
+}
+.LoginFooter-langs {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+.LoginFooter-langs a {
+    color: var(--m-muted);
+    text-decoration: none;
+    transition: color 0.18s ease;
+}
+.LoginFooter-langs a:hover {
+    color: var(--m-ink);
+}
+.LoginFooter-langs span {
+    color: var(--m-rule);
+}
+
+/* Hide legacy footer if Znuny still renders it */
+.LoginScreen #Footer {
+    display: none !important;
+}
+
+/* =====================================================================
+   Responsive: stack hero above form on small screens
+   ===================================================================== */
+@media (max-width: 960px) {
+    .LoginScreen #AppWrapper {
+        grid-template-columns: 1fr;
+    }
+    #LoginHero {
+        min-height: auto;
+        padding: 32px 32px 40px;
+    }
+    .LoginHero-title { font-size: 56px; }
+    .LoginHero-features { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+    #LoginPanel::before { left: 24px; top: 28px; }
+    #LoginPanel::after { right: 24px; top: 32px; }
+    .LoginScreen #LoginPanel .MainBox > div { padding: 0 24px; }
+    .LoginScreen #LoginBox form::before { font-size: 34px; }
+    .LoginPanel-providers { grid-template-columns: 1fr; }
+    #LoginFooter { padding: 20px 24px; flex-direction: column; gap: 12px; align-items: flex-start; }
+    .LoginHero-title { font-size: 44px; }
+    .LoginHero-top { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .LoginHero-bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+/* <<< JAMBO MODERN LOGIN — END <<< */
