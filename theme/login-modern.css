@@ -107,19 +107,20 @@ body.LoginScreen {
 }
 
 .LoginHero-mark {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border: 1.5px solid var(--m-accent);
     color: var(--m-accent);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--m-serif);
-    font-style: italic;
-    font-weight: 600;
-    font-size: 18px;
-    border-radius: 4px;
-    background: rgba(212, 105, 79, 0.06);
+    border-radius: 50%;
+    background: rgba(212, 105, 79, 0.08);
+}
+.LoginHero-mark svg {
+    width: 22px;
+    height: 22px;
+    display: block;
 }
 
 .LoginHero-wordmark {

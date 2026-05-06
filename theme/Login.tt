@@ -45,6 +45,8 @@ X-OTRS-Login: [% Env("Baselink") %]
 [% RenderBlockEnd("LoginLogoCSS") %]
 
     <link rel="stylesheet" type="text/css" href="[% Config("Frontend::WebPath") %]common/css/font-awesome.min.css" />
+    <link rel="icon" type="image/svg+xml" href="[% Config("Frontend::WebPath") %]skins/Agent/default/img/icons/supportdeck-favicon.svg" />
+    <link rel="apple-touch-icon" href="[% Config("Frontend::WebPath") %]skins/Agent/default/img/icons/supportdeck-favicon.svg" />
 
 # decide, if responsive CSS must be loaded
 # resposive CSS will not be loaded in "desktop mode" or if the document is within an iframe (customer overview in ticket phone overlay)
@@ -69,8 +71,7 @@ X-OTRS-Login: [% Env("Baselink") %]
     </script>
 
 [% RenderBlockStart("ShortcutIcon") %]
-    <link rel="shortcut icon" href="[% Config("Frontend::WebPath") %][% Data.AgentShortcutIcon %]" type="image/ico" />
-    <link rel="apple-touch-icon" href="[% Config("Frontend::WebPath") %][% Data.AgentAppleTouchIcon %]" />
+    [%# SupportDeck favicon already declared above; suppress upstream defaults to avoid them winning the tab icon. %]
 [% RenderBlockEnd("ShortcutIcon") %]
 
     <title>[% Translate(Data.Title) | html %] - SupportDeck</title>
@@ -88,7 +89,14 @@ X-OTRS-Login: [% Env("Baselink") %]
     <aside id="LoginHero" aria-hidden="true">
         <div class="LoginHero-top">
             <div class="LoginHero-brand">
-                <span class="LoginHero-mark">S</span>
+                <span class="LoginHero-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.5 13 V11.5 a6.5 6.5 0 0 1 13 0 v1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        <rect x="4" y="12.5" width="3" height="5.5" rx="1" fill="currentColor"/>
+                        <rect x="17" y="12.5" width="3" height="5.5" rx="1" fill="currentColor"/>
+                        <path d="M18.5 18 V19.5 a1.5 1.5 0 0 1 -1.5 1.5 H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
                 <span class="LoginHero-wordmark">supportdeck.</span>
             </div>
             <div class="LoginHero-status">
@@ -100,9 +108,10 @@ X-OTRS-Login: [% Env("Baselink") %]
         <div class="LoginHero-mid">
             <div class="LoginHero-eyebrow">
                 <span class="LoginHero-eyebrowLine"></span>
-                IT SERVICE MANAGEMENT &middot; V7.3
+                <span class="LoginHero-eyebrowText">BUILT FOR UNIFIED SUPPORT &amp; OPS</span>
+                <span class="LoginHero-eyebrowLine"></span>
             </div>
-            <h1 class="LoginHero-title">Operations,<br><em>orchestrated.</em></h1>
+            <h1 class="LoginHero-title">Support &amp; Operation<br><em>orchestrated.</em></h1>
             <p class="LoginHero-lede">Incidents, changes, assets, and SLAs &mdash; all managed from one open-source platform built for serious IT teams.</p>
 
             <div class="LoginHero-features">

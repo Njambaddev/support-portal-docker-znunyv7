@@ -1,0 +1,12 @@
+<!-- SupportDeck favicon — circular dark-navy chip with brand-colored headset.
+     Served at /znuny-web/skins/Agent/default/img/icons/supportdeck-favicon.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="16" fill="#0E1B2C"/>
+    <circle cx="16" cy="16" r="14.5" fill="none" stroke="#D4694F" stroke-width="0.6" stroke-opacity="0.35"/>
+    <path d="M9 17.5 V14.5 a7 7 0 0 1 14 0 v3"
+          stroke="#E6E2D8" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <rect x="7" y="16.5" width="4" height="7" rx="1.2" fill="#D4694F"/>
+    <rect x="21" y="16.5" width="4" height="7" rx="1.2" fill="#D4694F"/>
+    <path d="M23 23.5 V25 a1.5 1.5 0 0 1 -1.5 1.5 H17"
+          stroke="#E6E2D8" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+</svg>
